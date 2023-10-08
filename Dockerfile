@@ -23,4 +23,4 @@ COPY --from=builder /app/telegram-api .
 EXPOSE 8080
 
 # Command to run the binary
-CMD ["./telegram-api"]
+CMD ["bash"]

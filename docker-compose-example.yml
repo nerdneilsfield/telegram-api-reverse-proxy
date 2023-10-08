@@ -1,0 +1,24 @@
+version: '3.3'
+
+networks:
+  proxy:
+    external: true
+
+services:
+  tg:
+    image: nerdneils/telegram-api-reverse-proxy:latest
+    networks:
+      - proxy
+    command: ./telegram-api -url https://api.telegram.org
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=proxy
+      - "traefik.http.routers.tg.entrypoints=http"
+      - "traefik.http.routers.tg.rule=Host(`tg-api.example.org`)"
+      - "traefik.http.middlewares.https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.tg.middlewares=https-redirect@docker"
+      - traefik.http.routers.tg-secure.entrypoints=https
+      - "traefik.http.routers.tg-secure.rule=Host(`tg-api.example.org`)"
+      - traefik.http.routers.tg-secure.tls=true
+      - traefik.http.routers.tg-secure.tls.certresolver=cloudflare
+      - "traefik.http.services.tg.loadbalancer.server.port=18080"

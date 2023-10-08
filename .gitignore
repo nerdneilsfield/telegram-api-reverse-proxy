@@ -20,5 +20,6 @@
 # Go workspace file
 go.work
 
-
 telegram-api
+docker-compose.yml
+docker-compose.yml

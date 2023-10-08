@@ -2,23 +2,30 @@ package main
 
 import (
 	"bytes"
+	"flag"
 	"fmt"
 	"io"
 	"net/http"
 	"net/url"
 )
 
-const (
-	telegraphURL = "https://api.telegram.org"
+var (
+	remoteURL = flag.String("url", "https://api.telegram.org", "remote api url")
 )
 
 func main() {
+
+	flag.Parse()
+
+	fmt.Println("Remote URL: ", *remoteURL)
+	fmt.Println("Starting the server on port 18080...")
+
 	http.HandleFunc("/", handler)
-	http.ListenAndServe("0.0.0.0:8080", nil)
+	http.ListenAndServe("0.0.0.0:18080", nil)
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
-	targetURL, _ := url.Parse(telegraphURL)
+	targetURL, _ := url.Parse(*remoteURL)
 
 	// 设置允许跨域访问的响应头
 	origin := r.Header.Get("Access-Control-Allow-Origin")
@@ -51,7 +58,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	client := &http.Client{}
 	response, err := client.Do(newRequest)
 	if err != nil {
-		errormsg := fmt.Sprintf("Error sending request to Telegram API: %v", err)
+		errormsg := fmt.Sprintf("Error sending request to Reverse API %v: %v", *remoteURL, err)
 		http.Error(w, errormsg, http.StatusInternalServerError)
 		return
 	}
