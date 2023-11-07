@@ -64,6 +64,13 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer response.Body.Close()
 
+	for key, values := range response.Header {
+		for _, value := range values {
+			w.Header().Add(key, value)
+		}
+	}
+
+	w.WriteHeader(response.StatusCode)
 	// 复制响应体到响应 writer
 	io.Copy(w, response.Body)
 }
